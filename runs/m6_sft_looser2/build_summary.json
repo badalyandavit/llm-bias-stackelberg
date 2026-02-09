@@ -1,0 +1,19 @@
+{
+  "in_predictions": "runs/m5_eval_a_forced/predictions.jsonl",
+  "out_dir": "runs/m6_sft_looser2",
+  "kept": 1,
+  "dropped": 3,
+  "filters": {
+    "min_improvement": 0.0,
+    "min_chars": 1,
+    "max_chars": 10000,
+    "require_text_change": true,
+    "require_action_rewrite": false
+  },
+  "outputs": {
+    "sft_jsonl": "runs/m6_sft_looser2/sft.jsonl",
+    "reference_jsonl": "runs/m6_sft_looser2/reference.jsonl",
+    "dropped_jsonl": "runs/m6_sft_looser2/dropped.jsonl",
+    "summary_json": "runs/m6_sft_looser2/build_summary.json"
+  }
+}

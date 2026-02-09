@@ -1,0 +1,9 @@
+{
+  "n": 4,
+  "mean_before": 0.125,
+  "mean_after": 0.0,
+  "mean_delta": -0.125,
+  "rewrite_rate": 0.25,
+  "abstain_rate": 0.0,
+  "accept_rate": 0.75
+}

@@ -8,6 +8,7 @@ from bias_stackelberg.data.toy import toy_examples
 from bias_stackelberg.eval.runner import EvalAConfig, run_option_a
 from bias_stackelberg.follower.option_a import OptionAConfig
 from bias_stackelberg.models import GenConfig
+from bias_stackelberg.train.lora_sft import TrainLoRAConfig, train_lora_sft
 
 
 def _cmd_eval_a(args: argparse.Namespace) -> None:
@@ -45,6 +46,28 @@ def _cmd_build_sft(args: argparse.Namespace) -> None:
     print(summary)
 
 
+def _cmd_train_lora(args: argparse.Namespace) -> None:
+    target_modules = tuple(x.strip() for x in args.target_modules.split(",") if x.strip())
+
+    cfg = TrainLoRAConfig(
+        sft_jsonl=args.sft_jsonl,
+        out_dir=args.out_dir,
+        model_name=args.model_name,
+        max_length=args.max_length,
+        seed=args.seed,
+        max_steps=args.max_steps,
+        learning_rate=args.learning_rate,
+        batch_size=args.batch_size,
+        grad_accum=args.grad_accum,
+        lora_r=args.lora_r,
+        lora_alpha=args.lora_alpha,
+        lora_dropout=args.lora_dropout,
+        target_modules=target_modules,
+    )
+    summary = train_lora_sft(cfg=cfg)
+    print(summary)
+
+
 def main() -> None:
     p = argparse.ArgumentParser(prog="bias-stackelberg")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -68,5 +91,25 @@ def main() -> None:
     b.add_argument("--allow-non-rewrite-action", action="store_true")
     b.set_defaults(func=_cmd_build_sft)
 
+    t = sub.add_parser("train-lora", help="Train LoRA adapter from sft.jsonl")
+    t.add_argument("--sft-jsonl", required=True)
+    t.add_argument("--out-dir", required=True)
+    t.add_argument("--model-name", default="distilgpt2")
+    t.add_argument("--max-length", type=int, default=512)
+    t.add_argument("--seed", type=int, default=0)
+    t.add_argument("--max-steps", type=int, default=50)
+    t.add_argument("--learning-rate", type=float, default=2e-4)
+    t.add_argument("--batch-size", type=int, default=1)
+    t.add_argument("--grad-accum", type=int, default=1)
+    t.add_argument("--lora-r", type=int, default=8)
+    t.add_argument("--lora-alpha", type=int, default=16)
+    t.add_argument("--lora-dropout", type=float, default=0.05)
+    t.add_argument("--target-modules", default="c_attn")
+    t.set_defaults(func=_cmd_train_lora)
+
     args = p.parse_args()
     args.func(args)
+
+
+if __name__ == "__main__":
+    main()

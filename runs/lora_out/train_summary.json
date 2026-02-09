@@ -1,0 +1,22 @@
+{
+  "train_records": 1,
+  "adapter_dir": "runs/lora_out/adapter",
+  "config": {
+    "sft_jsonl": "data/sft/sft.jsonl",
+    "out_dir": "runs/lora_out",
+    "model_name": "distilgpt2",
+    "max_length": 512,
+    "seed": 0,
+    "max_steps": 50,
+    "learning_rate": 0.0002,
+    "batch_size": 1,
+    "grad_accum": 1,
+    "lora_r": 8,
+    "lora_alpha": 16,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "c_attn",
+      "c_proj"
+    ]
+  }
+}

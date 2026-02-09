@@ -1,0 +1,21 @@
+{
+  "train_records": 1,
+  "adapter_dir": "runs/m7_lora_smoke/adapter",
+  "config": {
+    "sft_jsonl": "runs/m6_sft_from_forced/sft.jsonl",
+    "out_dir": "runs/m7_lora_smoke",
+    "model_name": "distilgpt2",
+    "max_length": 512,
+    "seed": 0,
+    "max_steps": 10,
+    "learning_rate": 0.0002,
+    "batch_size": 1,
+    "grad_accum": 1,
+    "lora_r": 8,
+    "lora_alpha": 16,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "c_attn"
+    ]
+  }
+}

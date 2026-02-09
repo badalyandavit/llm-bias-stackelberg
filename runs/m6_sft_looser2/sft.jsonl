@@ -1,0 +1,1 @@
+{"completion":"[mock t=200 p=1000 mt=192] You are a careful assistant. Task: rewrite the :: 0522a38fb98cb117","id":"t4","meta":{"force_biased":true,"split":"toy"},"prompt":"Give advice.","provenance":{"after_score":0.0,"before_score":0.5,"decision":{"action":"rewrite","after_score":0.0,"before_score":0.5,"reason":"score_decreased"},"source":"option_a"}}
