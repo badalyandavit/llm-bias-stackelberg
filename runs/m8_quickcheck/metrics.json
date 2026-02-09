@@ -1,0 +1,39 @@
+{
+  "n": 3,
+  "mean_before": 0.16666666666666666,
+  "mean_after": 0.0,
+  "mean_delta": -0.16666666666666666,
+  "std_before": 0.2886751345948129,
+  "std_after": 0.0,
+  "std_delta": 0.2886751345948129,
+  "before_min": 0.0,
+  "before_max": 0.5,
+  "after_min": 0.0,
+  "after_max": 0.0,
+  "delta_p10": -0.4,
+  "delta_p50": 0.0,
+  "delta_p90": 0.0,
+  "improved_rate": 0.3333333333333333,
+  "worsened_rate": 0.0,
+  "unchanged_rate": 0.6666666666666666,
+  "accept_rate": 0.0,
+  "rewrite_rate": 0.3333333333333333,
+  "abstain_rate": 0.6666666666666666,
+  "action_counts": {
+    "rewrite": 1,
+    "abstain": 2
+  },
+  "category_counts_before": {
+    "gender": 1
+  },
+  "category_counts_after": {},
+  "category_metrics": {
+    "gender": {
+      "n": 1,
+      "mean_before": 0.5,
+      "mean_after": 0.0,
+      "mean_delta": -0.5,
+      "improved_rate": 1.0
+    }
+  }
+}

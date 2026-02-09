@@ -1,0 +1,28 @@
+{
+  "n": 1000,
+  "mean_before": 0.0,
+  "mean_after": 0.0,
+  "mean_delta": 0.0,
+  "std_before": 0.0,
+  "std_after": 0.0,
+  "std_delta": 0.0,
+  "before_min": 0.0,
+  "before_max": 0.0,
+  "after_min": 0.0,
+  "after_max": 0.0,
+  "delta_p10": 0.0,
+  "delta_p50": 0.0,
+  "delta_p90": 0.0,
+  "improved_rate": 0.0,
+  "worsened_rate": 0.0,
+  "unchanged_rate": 1.0,
+  "accept_rate": 1.0,
+  "rewrite_rate": 0.0,
+  "abstain_rate": 0.0,
+  "action_counts": {
+    "accept": 1000
+  },
+  "category_counts_before": {},
+  "category_counts_after": {},
+  "category_metrics": {}
+}

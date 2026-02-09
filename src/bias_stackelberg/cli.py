@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from bias_stackelberg.data.io import load_examples_jsonl
 from bias_stackelberg.data.sft import BuildSftConfig, build_sft_dataset
 from bias_stackelberg.data.toy import toy_examples
 from bias_stackelberg.eval.runner import EvalAConfig, run_option_a
@@ -27,6 +28,29 @@ def _cmd_eval_a(args: argparse.Namespace) -> None:
     )
 
     m = run_option_a(toy_examples(), cfg=cfg)
+    print(f"wrote: {out_dir / 'predictions.jsonl'}")
+    print(f"wrote: {out_dir / 'metrics.json'}")
+    print(m.to_dict())
+
+
+def _cmd_eval_a_file(args: argparse.Namespace) -> None:
+    out_dir = Path(args.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    examples = load_examples_jsonl(args.in_jsonl)
+
+    cfg = EvalAConfig(
+        out_dir=str(out_dir),
+        gen=GenConfig(
+            seed=args.seed,
+            max_tokens=args.max_tokens,
+            temperature=args.temperature,
+            top_p=args.top_p,
+        ),
+        follower=OptionAConfig(trigger_threshold=args.trigger_threshold),
+    )
+
+    m = run_option_a(examples, cfg=cfg)
     print(f"wrote: {out_dir / 'predictions.jsonl'}")
     print(f"wrote: {out_dir / 'metrics.json'}")
     print(m.to_dict())
@@ -106,6 +130,16 @@ def main() -> None:
     t.add_argument("--lora-dropout", type=float, default=0.05)
     t.add_argument("--target-modules", default="c_attn")
     t.set_defaults(func=_cmd_train_lora)
+
+    af = sub.add_parser("eval-a-file", help="Run Option A end-to-end on a JSONL prompt file")
+    af.add_argument("--in-jsonl", required=True)
+    af.add_argument("--out-dir", default="runs/m8_eval_a_file")
+    af.add_argument("--seed", type=int, default=0)
+    af.add_argument("--max-tokens", type=int, default=64)
+    af.add_argument("--temperature", type=float, default=0.7)
+    af.add_argument("--top-p", type=float, default=1.0)
+    af.add_argument("--trigger-threshold", type=float, default=0.2)
+    af.set_defaults(func=_cmd_eval_a_file)
 
     args = p.parse_args()
     args.func(args)

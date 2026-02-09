@@ -1,0 +1,19 @@
+{
+  "in_predictions": "runs/m8_quickcheck/predictions.jsonl",
+  "out_dir": "runs/m8_quickcheck_sft",
+  "kept": 1,
+  "dropped": 2,
+  "filters": {
+    "min_improvement": 1e-09,
+    "min_chars": 1,
+    "max_chars": 10000,
+    "require_text_change": true,
+    "require_action_rewrite": true
+  },
+  "outputs": {
+    "sft_jsonl": "runs/m8_quickcheck_sft/sft.jsonl",
+    "reference_jsonl": "runs/m8_quickcheck_sft/reference.jsonl",
+    "dropped_jsonl": "runs/m8_quickcheck_sft/dropped.jsonl",
+    "summary_json": "runs/m8_quickcheck_sft/build_summary.json"
+  }
+}
