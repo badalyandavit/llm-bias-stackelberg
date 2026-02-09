@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterator
 from dataclasses import is_dataclass
 from pathlib import Path
 from typing import Any
@@ -35,3 +36,19 @@ class JsonlWriter:
 
     def __exit__(self, exc_type, exc, tb) -> None:
         self.close()
+
+
+def iter_jsonl(path: str | Path) -> Iterator[dict[str, Any]]:
+    p = Path(path)
+    with p.open("r", encoding="utf-8") as fh:
+        for i, line in enumerate(fh, start=1):
+            s = line.strip()
+            if not s:
+                continue
+            try:
+                obj = json.loads(s)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Invalid JSON on line {i} in {p}") from e
+            if not isinstance(obj, dict):
+                raise TypeError(f"Expected dict JSON object on line {i} in {p}")
+            yield obj
