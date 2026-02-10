@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from bias_stackelberg.core.prompts import detox_rewrite_prompt
 from bias_stackelberg.core.jsonl import JsonlWriter, iter_jsonl
+from bias_stackelberg.core.prompts import detox_rewrite_prompt
 
 
 @dataclass(frozen=True)
