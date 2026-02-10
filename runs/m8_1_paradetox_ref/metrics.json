@@ -1,0 +1,48 @@
+{
+  "n": 200,
+  "mean_before": 0.752147841155529,
+  "mean_after": 0.6628453325480222,
+  "mean_delta": -0.08930250860750676,
+  "std_before": 0.12447996744358136,
+  "std_after": 0.2737472061210069,
+  "std_delta": 0.297965988938409,
+  "before_min": 0.5072726607322693,
+  "before_max": 0.9897552132606506,
+  "after_min": 0.20973461866378784,
+  "after_max": 0.9925105571746826,
+  "delta_p10": -0.4994344383478165,
+  "delta_p50": -0.05591261386871338,
+  "delta_p90": 0.2903104782104492,
+  "improved_rate": 0.54,
+  "worsened_rate": 0.455,
+  "unchanged_rate": 0.005,
+  "accept_rate": 0.0,
+  "rewrite_rate": 1.0,
+  "abstain_rate": 0.0,
+  "action_counts": {
+    "rewrite": 200
+  },
+  "category_counts_before": {
+    "toxic": 197,
+    "obscene": 3
+  },
+  "category_counts_after": {
+    "toxic": 128
+  },
+  "category_metrics": {
+    "obscene": {
+      "n": 3,
+      "mean_before": 0.5237596233685812,
+      "mean_after": 0.35389041900634766,
+      "mean_delta": -0.1698692043622335,
+      "improved_rate": 1.0
+    },
+    "toxic": {
+      "n": 197,
+      "mean_before": 0.7556258343197972,
+      "mean_after": 0.6675502297085554,
+      "mean_delta": -0.08807560461124188,
+      "improved_rate": 0.5329949238578681
+    }
+  }
+}

@@ -20,6 +20,7 @@ train = [
   "peft>=0.10.0",
   "accelerate>=0.30.0",
 ]
+hf = ["bias-stackelberg[train]", "datasets"]
 
 
 [project.scripts]
