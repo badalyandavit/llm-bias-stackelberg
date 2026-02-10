@@ -43,7 +43,11 @@ def load_sft_records(path: str | Path) -> list[dict[str, Any]]:
 
 
 def format_prompt(prompt: str) -> str:
-    return prompt
+    if not prompt:
+        return prompt
+    if prompt[-1].isspace():
+        return prompt
+    return prompt + "\n"
 
 
 class SftCausalLMDataset(Dataset):

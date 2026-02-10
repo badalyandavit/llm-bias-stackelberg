@@ -1,5 +1,6 @@
 import json
 
+from bias_stackelberg.core.prompts import detox_rewrite_prompt
 from bias_stackelberg.data.sft import BuildSftConfig, build_sft_dataset
 
 
@@ -85,5 +86,5 @@ def test_build_sft_keeps_only_improving_rewrites(tmp_path) -> None:
     assert len(sft_lines) == 1
     obj = json.loads(sft_lines[0])
     assert obj["id"] == "a"
-    assert obj["prompt"] == "p"
+    assert obj["prompt"] == detox_rewrite_prompt("Women are bad at math.")
     assert "completion" in obj
