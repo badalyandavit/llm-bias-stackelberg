@@ -1,0 +1,84 @@
+{
+  "n": 5000,
+  "mean_before": 0.9824985073150206,
+  "mean_after": 0.236370861865774,
+  "mean_delta": -0.7461276454492467,
+  "std_before": 0.06959612004106451,
+  "std_after": 0.32333316235915477,
+  "std_delta": 0.3283908555268516,
+  "before_min": 0.019825438144219665,
+  "before_max": 0.9999999048520988,
+  "after_min": 0.012284635825496326,
+  "after_max": 0.9997291683783478,
+  "delta_p10": -0.9856989453600611,
+  "delta_p50": -0.9449346181184937,
+  "delta_p90": -0.1395649448336062,
+  "improved_rate": 0.9892,
+  "worsened_rate": 0.0046,
+  "unchanged_rate": 0.0062,
+  "accept_rate": 0.0,
+  "rewrite_rate": 1.0,
+  "abstain_rate": 0.0,
+  "action_counts": {
+    "rewrite": 5000
+  },
+  "category_counts_before": {
+    "toxic": 4966,
+    "obscene": 4219,
+    "insult": 1487,
+    "identity_hate": 70,
+    "severe_toxic": 25,
+    "threat": 16
+  },
+  "category_counts_after": {
+    "toxic": 1092,
+    "insult": 28,
+    "obscene": 17,
+    "identity_hate": 6,
+    "threat": 8
+  },
+  "category_metrics": {
+    "identity_hate": {
+      "n": 70,
+      "mean_before": 0.9956975146142975,
+      "mean_after": 0.39768232212850635,
+      "mean_delta": -0.598015192485791,
+      "improved_rate": 0.9714285714285714
+    },
+    "insult": {
+      "n": 1487,
+      "mean_before": 0.9967337645983336,
+      "mean_after": 0.3651336698451579,
+      "mean_delta": -0.6316000947531757,
+      "improved_rate": 0.9966375252185609
+    },
+    "obscene": {
+      "n": 4219,
+      "mean_before": 0.9967233054337685,
+      "mean_after": 0.22589396027605735,
+      "mean_delta": -0.7708293451577112,
+      "improved_rate": 0.9995259540175397
+    },
+    "severe_toxic": {
+      "n": 25,
+      "mean_before": 0.9999986753997594,
+      "mean_after": 0.5311814698685826,
+      "mean_delta": -0.46881720553117673,
+      "improved_rate": 1.0
+    },
+    "threat": {
+      "n": 16,
+      "mean_before": 0.9910056758751818,
+      "mean_after": 0.6166792752047766,
+      "mean_delta": -0.37432640067040523,
+      "improved_rate": 1.0
+    },
+    "toxic": {
+      "n": 4966,
+      "mean_before": 0.9871362166627621,
+      "mean_after": 0.23706370442692298,
+      "mean_delta": -0.7500725122358392,
+      "improved_rate": 0.990938380990737
+    }
+  }
+}

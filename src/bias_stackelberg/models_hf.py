@@ -78,16 +78,27 @@ class HfCausalLM:
         inputs = self._tok(prompt, return_tensors="pt")
         inputs = {k: v.to(torch_device) for k, v in inputs.items()}
 
-        do_sample = bool(config.temperature and config.temperature > 0.0)
+        extra = dict(extra_kwargs)
+        if "do_sample" in extra:
+            do_sample = bool(extra["do_sample"])
+        else:
+            do_sample = bool(config.temperature and config.temperature > 0.0)
+
         gen_kwargs: dict[str, Any] = {
             "max_new_tokens": int(config.max_tokens),
             "do_sample": do_sample,
-            "temperature": float(config.temperature),
-            "top_p": float(config.top_p),
             "pad_token_id": self._tok.pad_token_id,
             "eos_token_id": self._tok.eos_token_id,
         }
-        gen_kwargs.update(extra_kwargs)
+
+        if do_sample:
+            gen_kwargs["temperature"] = float(config.temperature)
+            gen_kwargs["top_p"] = float(config.top_p)
+        else:
+            extra.pop("temperature", None)
+            extra.pop("top_p", None)
+
+        gen_kwargs.update(extra)
 
         with torch.inference_mode():
             out = self._model.generate(**inputs, **gen_kwargs)
@@ -119,6 +130,6 @@ class HfCausalLM:
             "device": self._device,
             "adapter_dir": self.adapter_dir,
             "config": config_dict,
-            "extra_kwargs": extra_kwargs,
+            "extra_kwargs": extra,
         }
         return Generation(text=text, meta=meta)

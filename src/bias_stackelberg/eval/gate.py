@@ -26,11 +26,24 @@ def gate_detox(base_metrics_path: str, tuned_metrics_path: str, cfg: GateConfig)
     tuned_after = float(t["mean_after"])
     improvement = float(base_after - tuned_after)
 
+    base_empty = float(b["empty_rate"])
+    base_copy = float(b["copy_rate"])
+    base_len_p50 = float(b["len_ratio_p50"])
+
     tuned_empty = float(t["empty_rate"])
     tuned_copy = float(t["copy_rate"])
     tuned_len_p50 = float(t["len_ratio_p50"])
 
     reasons: list[str] = []
+
+    if base_empty > cfg.max_empty_rate:
+        reasons.append(f"base empty_rate too high: {base_empty:.4f} > {cfg.max_empty_rate:.4f}")
+    if base_copy > cfg.max_copy_rate:
+        reasons.append(f"base copy_rate too high: {base_copy:.4f} > {cfg.max_copy_rate:.4f}")
+    if base_len_p50 < cfg.min_len_ratio_p50:
+        reasons.append(
+            f"base len_ratio_p50 too small: {base_len_p50:.4f} < {cfg.min_len_ratio_p50:.4f}"
+        )
 
     if improvement < cfg.min_mean_after_improvement:
         reasons.append(
@@ -39,12 +52,12 @@ def gate_detox(base_metrics_path: str, tuned_metrics_path: str, cfg: GateConfig)
         )
 
     if tuned_empty > cfg.max_empty_rate:
-        reasons.append(f"empty_rate too high: {tuned_empty:.4f} > {cfg.max_empty_rate:.4f}")
+        reasons.append(f"tuned empty_rate too high: {tuned_empty:.4f} > {cfg.max_empty_rate:.4f}")
     if tuned_copy > cfg.max_copy_rate:
-        reasons.append(f"copy_rate too high: {tuned_copy:.4f} > {cfg.max_copy_rate:.4f}")
+        reasons.append(f"tuned copy_rate too high: {tuned_copy:.4f} > {cfg.max_copy_rate:.4f}")
     if tuned_len_p50 < cfg.min_len_ratio_p50:
         reasons.append(
-            f"len_ratio_p50 too small: {tuned_len_p50:.4f} < {cfg.min_len_ratio_p50:.4f}"
+            f"tuned len_ratio_p50 too small: {tuned_len_p50:.4f} < {cfg.min_len_ratio_p50:.4f}"
         )
 
     passed = len(reasons) == 0
@@ -54,6 +67,9 @@ def gate_detox(base_metrics_path: str, tuned_metrics_path: str, cfg: GateConfig)
         "base_mean_after": base_after,
         "tuned_mean_after": tuned_after,
         "mean_after_improvement": improvement,
+        "base_empty_rate": base_empty,
+        "base_copy_rate": base_copy,
+        "base_len_ratio_p50": base_len_p50,
         "tuned_empty_rate": tuned_empty,
         "tuned_copy_rate": tuned_copy,
         "tuned_len_ratio_p50": tuned_len_p50,

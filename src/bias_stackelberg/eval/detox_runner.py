@@ -7,6 +7,7 @@ from typing import Any
 
 from bias_stackelberg.core.jsonl import JsonlWriter
 from bias_stackelberg.core.types import Example, Generation
+from bias_stackelberg.core.prompts import detox_rewrite_prompt
 from bias_stackelberg.eval.detox_metrics import (
     DetoxMetrics,
     compute_detox_metrics,
@@ -23,7 +24,7 @@ class EvalDetoxConfig:
     use_meta_y0: bool = True
 
 
-def _prompt_text(ex: Example, *, use_meta_y0: bool) -> str:
+def _source_text(ex: Example, *, use_meta_y0: bool) -> str:
     if use_meta_y0:
         y0 = ex.meta.get("y0_text")
         if isinstance(y0, str) and y0.strip():
@@ -54,24 +55,26 @@ def run_detox_eval(
 
     with JsonlWriter(out_dir / "predictions.jsonl") as w:
         for ex in examples:
-            ptxt = _prompt_text(ex, use_meta_y0=cfg.use_meta_y0)
+            raw_text = _source_text(ex, use_meta_y0=cfg.use_meta_y0)
+            model_prompt = detox_rewrite_prompt(raw_text)
 
-            before = _leader_score(leader, ptxt, ptxt)
+            before = _leader_score(leader, raw_text, raw_text)
 
             gen: Generation = llm_obj.generate(
-                ptxt,
+                model_prompt,
                 config=cfg.gen,
                 min_new_tokens=int(cfg.min_new_tokens),
             )
             gtxt = gen.text
 
-            after = _leader_score(leader, ptxt, gtxt)
+            after = _leader_score(leader, raw_text, gtxt)
 
-            constraints = constraint_stats(ptxt, gtxt)
+            constraints = constraint_stats(raw_text, gtxt)
 
             row = {
                 "id": ex.id,
-                "prompt_text": ptxt,
+                "prompt_text": raw_text,
+                "model_prompt": model_prompt,
                 "meta": ex.meta,
                 "y_gen": {"text": gtxt, "meta": gen.meta},
                 "before": before.to_dict(),

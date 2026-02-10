@@ -1,0 +1,22 @@
+{
+  "train_records": 199,
+  "adapter_dir": "runs/m9_lora_distilgpt2/adapter",
+  "config": {
+    "sft_jsonl": "runs/m9_sft_paradetox/sft.jsonl",
+    "out_dir": "runs/m9_lora_distilgpt2",
+    "model_name": "distilgpt2",
+    "max_length": 512,
+    "seed": 0,
+    "max_steps": 200,
+    "learning_rate": 0.0002,
+    "batch_size": 1,
+    "grad_accum": 1,
+    "lora_r": 8,
+    "lora_alpha": 16,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "c_attn",
+      "c_proj"
+    ]
+  }
+}

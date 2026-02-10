@@ -1,0 +1,19 @@
+{
+  "in_predictions": "runs/m9_eval_a_paradetox_5k/predictions.jsonl",
+  "out_dir": "runs/m9_sft_paradetox_5k",
+  "kept": 4969,
+  "dropped": 31,
+  "filters": {
+    "min_improvement": -1.0,
+    "min_chars": 1,
+    "max_chars": 10000,
+    "require_text_change": true,
+    "require_action_rewrite": true
+  },
+  "outputs": {
+    "sft_jsonl": "runs/m9_sft_paradetox_5k/sft.jsonl",
+    "reference_jsonl": "runs/m9_sft_paradetox_5k/reference.jsonl",
+    "dropped_jsonl": "runs/m9_sft_paradetox_5k/dropped.jsonl",
+    "summary_json": "runs/m9_sft_paradetox_5k/build_summary.json"
+  }
+}

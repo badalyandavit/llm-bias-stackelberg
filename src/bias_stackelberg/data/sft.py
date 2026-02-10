@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from bias_stackelberg.core.prompts import detox_rewrite_prompt
 from bias_stackelberg.core.jsonl import JsonlWriter, iter_jsonl
 
 
@@ -141,10 +142,12 @@ def build_sft_dataset(*, cfg: BuildSftConfig) -> dict[str, Any]:
                 dropped += 1
                 continue
 
+            rewrite_prompt = detox_rewrite_prompt(y0)
+
             w_sft.write(
                 {
                     "id": ex_id,
-                    "prompt": prompt,
+                    "prompt": rewrite_prompt,
                     "completion": y1,
                     "meta": meta,
                     "provenance": {
@@ -152,6 +155,9 @@ def build_sft_dataset(*, cfg: BuildSftConfig) -> dict[str, Any]:
                         "before_score": before,
                         "after_score": after,
                         "decision": row.get("decision", {}),
+                        "source_prompt": prompt,
+                        "source_text": y0,
+                        "prompt_template": "detox_rewrite_v1",
                     },
                 }
             )

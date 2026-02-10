@@ -43,7 +43,7 @@ def load_sft_records(path: str | Path) -> list[dict[str, Any]]:
 
 
 def format_prompt(prompt: str) -> str:
-    return f"User:\n{prompt}\n\nAssistant:\n"
+    return prompt
 
 
 class SftCausalLMDataset(Dataset):
