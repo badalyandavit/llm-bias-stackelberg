@@ -92,11 +92,9 @@ class HfCausalLM:
         with torch.inference_mode():
             out = self._model.generate(**inputs, **gen_kwargs)
 
-        decoded = self._tok.decode(out[0], skip_special_tokens=True)
-
-        text = decoded
-        if decoded.startswith(prompt):
-            text = decoded[len(prompt) :].strip()
+        prompt_len = int(inputs["input_ids"].shape[1])
+        gen_ids = out[0][prompt_len:]
+        text = self._tok.decode(gen_ids, skip_special_tokens=True).strip()
 
         if config.stop:
             for s in config.stop:

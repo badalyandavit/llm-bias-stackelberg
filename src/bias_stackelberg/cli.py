@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import Any
 
 from bias_stackelberg.data.io import load_examples_jsonl
 from bias_stackelberg.data.paradetox import MakeParaDetoxConfig, make_paradetox_jsonl
 from bias_stackelberg.data.sft import BuildSftConfig, build_sft_dataset
 from bias_stackelberg.data.toy import toy_examples
+from bias_stackelberg.eval.detox_runner import EvalDetoxConfig, run_detox_eval
+from bias_stackelberg.eval.gate import GateConfig, gate_detox
 from bias_stackelberg.eval.runner import EvalAConfig, run_option_a
 from bias_stackelberg.follower.option_a import OptionAConfig
 from bias_stackelberg.models import GenConfig
@@ -14,7 +17,40 @@ from bias_stackelberg.models_hf import HfCausalLM
 from bias_stackelberg.train.lora_sft import TrainLoRAConfig, train_lora_sft
 
 
-def _maybe_make_hf_leader(args: argparse.Namespace):
+def _add_leader_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument(
+        "--leader",
+        choices=["rule", "hf-toxic"],
+        default="rule",
+        help="Which leader/detector to use for scoring.",
+    )
+    p.add_argument("--hf-model", default="Arsive/roberta-toxicity-classifier")
+    p.add_argument("--hf-device", default="auto")
+    p.add_argument("--hf-batch-size", type=int, default=8)
+    p.add_argument("--hf-max-length", type=int, default=256)
+    p.add_argument("--hf-cat-threshold", type=float, default=0.5)
+    p.add_argument("--hf-score-mode", choices=["any", "toxic", "max", "weighted"], default="any")
+    p.add_argument("--hf-weights", default=None)
+    p.add_argument(
+        "--hf-weighted-normalize",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    p.add_argument(
+        "--hf-weighted-clamp",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+
+
+def _add_generation_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--gen-backend", choices=["mock", "hf"], default="mock")
+    p.add_argument("--gen-model", default="distilgpt2")
+    p.add_argument("--adapter-dir", default=None)
+    p.add_argument("--device", default="auto")
+
+
+def _maybe_make_hf_leader(args: argparse.Namespace) -> Any | None:
     if args.leader != "hf-toxic":
         return None
 
@@ -43,6 +79,17 @@ def _maybe_make_hf_leader(args: argparse.Namespace):
     return HfToxicityLeader(cfg)
 
 
+def _maybe_make_gen_llm(args: argparse.Namespace) -> Any | None:
+    if args.gen_backend != "hf":
+        return None
+
+    return HfCausalLM(
+        model_name=args.gen_model,
+        adapter_dir=args.adapter_dir,
+        device=args.device,
+    )
+
+
 def _common_gen_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--max-tokens", type=int, default=64)
@@ -50,42 +97,19 @@ def _common_gen_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--top-p", type=float, default=1.0)
 
 
-def _common_eval_args(p: argparse.ArgumentParser) -> None:
+def _common_eval_a_args(p: argparse.ArgumentParser) -> None:
     _common_gen_args(p)
     p.add_argument("--trigger-threshold", type=float, default=0.2)
-    p.add_argument(
-        "--leader",
-        choices=["rule", "hf-toxic"],
-        default="rule",
-        help="Which leader/detector to use for scoring.",
-    )
     p.add_argument(
         "--reference-rewrite",
         action="store_true",
         help="If meta.reference_text exists, use it as the rewrite (oracle mode).",
     )
-    p.add_argument("--hf-model", default="Arsive/roberta-toxicity-classifier")
-    p.add_argument("--hf-device", default="auto")
-    p.add_argument("--hf-batch-size", type=int, default=8)
-    p.add_argument("--hf-max-length", type=int, default=256)
-    p.add_argument("--hf-cat-threshold", type=float, default=0.5)
-
-    p.add_argument("--hf-score-mode", choices=["any", "toxic", "max", "weighted"], default="any")
-    p.add_argument("--hf-weights", default=None)
-
-    p.add_argument(
-        "--hf-weighted-normalize",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-    )
-    p.add_argument(
-        "--hf-weighted-clamp",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-    )
+    _add_leader_args(p)
+    _add_generation_args(p)
 
 
-def _make_eval_cfg(args: argparse.Namespace, out_dir: Path) -> EvalAConfig:
+def _make_eval_a_cfg(args: argparse.Namespace, out_dir: Path) -> EvalAConfig:
     return EvalAConfig(
         out_dir=str(out_dir),
         gen=GenConfig(
@@ -99,24 +123,13 @@ def _make_eval_cfg(args: argparse.Namespace, out_dir: Path) -> EvalAConfig:
     )
 
 
-def _maybe_make_gen_llm(args: argparse.Namespace):
-    if args.gen_backend != "hf":
-        return None
-
-    return HfCausalLM(
-        model_name=args.gen_model,
-        adapter_dir=args.adapter_dir,
-        device=args.device,
-    )
-
-
 def _cmd_eval_a(args: argparse.Namespace) -> None:
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     leader = _maybe_make_hf_leader(args)
     llm = _maybe_make_gen_llm(args)
-    cfg = _make_eval_cfg(args, out_dir)
+    cfg = _make_eval_a_cfg(args, out_dir)
 
     m = run_option_a(toy_examples(), cfg=cfg, leader=leader, llm=llm)
     print(f"wrote: {out_dir / 'predictions.jsonl'}")
@@ -132,7 +145,7 @@ def _cmd_eval_a_file(args: argparse.Namespace) -> None:
 
     leader = _maybe_make_hf_leader(args)
     llm = _maybe_make_gen_llm(args)
-    cfg = _make_eval_cfg(args, out_dir)
+    cfg = _make_eval_a_cfg(args, out_dir)
 
     m = run_option_a(examples, cfg=cfg, leader=leader, llm=llm)
     print(f"wrote: {out_dir / 'predictions.jsonl'}")
@@ -182,28 +195,83 @@ def _cmd_make_paradetox(args: argparse.Namespace) -> None:
     print(summary)
 
 
+def _cmd_eval_detox_file(args: argparse.Namespace) -> None:
+    out_dir = Path(args.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    examples = load_examples_jsonl(args.in_jsonl)
+
+    leader = _maybe_make_hf_leader(args)
+    llm = _maybe_make_gen_llm(args)
+
+    cfg = EvalDetoxConfig(
+        out_dir=str(out_dir),
+        gen=GenConfig(
+            seed=args.seed,
+            max_tokens=args.max_tokens,
+            temperature=args.temperature,
+            top_p=args.top_p,
+        ),
+        min_new_tokens=args.min_new_tokens,
+        use_meta_y0=not args.no_use_meta_y0,
+    )
+
+    m = run_detox_eval(examples, cfg=cfg, leader=leader, llm=llm)
+    print(f"wrote: {out_dir / 'predictions.jsonl'}")
+    print(f"wrote: {out_dir / 'metrics.json'}")
+    print(m.to_dict())
+
+
+def _cmd_gate_detox(args: argparse.Namespace) -> None:
+    cfg = GateConfig(
+        min_mean_after_improvement=args.min_mean_after_improvement,
+        max_empty_rate=args.max_empty_rate,
+        max_copy_rate=args.max_copy_rate,
+        min_len_ratio_p50=args.min_len_ratio_p50,
+    )
+    out = gate_detox(args.base_metrics, args.tuned_metrics, cfg)
+    print(out)
+    if not out["passed"]:
+        raise SystemExit(2)
+
+
 def main() -> None:
     p = argparse.ArgumentParser(prog="bias-stackelberg")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     a = sub.add_parser("eval-a", help="Run Option A end-to-end on toy data")
     a.add_argument("--out-dir", default="runs/eval_a_toy")
-    a.add_argument("--gen-backend", choices=["mock", "hf"], default="mock")
-    a.add_argument("--gen-model", default="distilgpt2")
-    a.add_argument("--adapter-dir", default=None)
-    a.add_argument("--device", default="auto")
-    _common_eval_args(a)
+    _common_eval_a_args(a)
     a.set_defaults(func=_cmd_eval_a)
 
     af = sub.add_parser("eval-a-file", help="Run Option A end-to-end on a JSONL prompt file")
     af.add_argument("--in-jsonl", required=True)
     af.add_argument("--out-dir", default="runs/eval_a_file")
-    af.add_argument("--gen-backend", choices=["mock", "hf"], default="mock")
-    af.add_argument("--gen-model", default="distilgpt2")
-    af.add_argument("--adapter-dir", default=None)
-    af.add_argument("--device", default="auto")
-    _common_eval_args(af)
+    _common_eval_a_args(af)
     af.set_defaults(func=_cmd_eval_a_file)
+
+    d = sub.add_parser(
+        "eval-detox-file", help="Direct detox eval (format-aligned with ParaDetox SFT)"
+    )
+    d.add_argument("--in-jsonl", required=True)
+    d.add_argument("--out-dir", required=True)
+    _common_gen_args(d)
+    d.add_argument("--min-new-tokens", type=int, default=8)
+    d.add_argument("--no-use-meta-y0", action="store_true")
+    _add_leader_args(d)
+    _add_generation_args(d)
+    d.set_defaults(func=_cmd_eval_detox_file)
+
+    g = sub.add_parser(
+        "gate-detox", help="Early termination gate: compare base vs LoRA detox metrics"
+    )
+    g.add_argument("--base-metrics", required=True)
+    g.add_argument("--tuned-metrics", required=True)
+    g.add_argument("--min-mean-after-improvement", type=float, default=0.03)
+    g.add_argument("--max-empty-rate", type=float, default=0.10)
+    g.add_argument("--max-copy-rate", type=float, default=0.80)
+    g.add_argument("--min-len-ratio-p50", type=float, default=0.25)
+    g.set_defaults(func=_cmd_gate_detox)
 
     b = sub.add_parser("build-sft", help="Build SFT dataset from predictions.jsonl")
     b.add_argument("--in-predictions", required=True)
@@ -231,7 +299,7 @@ def main() -> None:
     t.add_argument("--target-modules", default="c_attn")
     t.set_defaults(func=_cmd_train_lora)
 
-    pd = sub.add_parser("make-paradetox", help="Write ParaDetox examples JSONL for eval-a-file")
+    pd = sub.add_parser("make-paradetox", help="Write ParaDetox examples JSONL for eval-detox-file")
     pd.add_argument("--out-jsonl", default="data/paradetox_1k.jsonl")
     pd.add_argument("--n", type=int, default=1000)
     pd.add_argument("--seed", type=int, default=0)
