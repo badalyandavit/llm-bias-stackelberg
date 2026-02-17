@@ -1,0 +1,27 @@
+{
+  "train_records": 1187,
+  "adapter_dir": "runs/m9_lora_qwen2p5_0p5b/adapter",
+  "config": {
+    "sft_jsonl": "runs/m9_sft_paradetox_qwen/sft.jsonl",
+    "out_dir": "runs/m9_lora_qwen2p5_0p5b",
+    "model_name": "Qwen/Qwen2.5-0.5B-Instruct",
+    "max_length": 512,
+    "seed": 0,
+    "max_steps": 300,
+    "learning_rate": 0.0001,
+    "batch_size": 1,
+    "grad_accum": 1,
+    "lora_r": 8,
+    "lora_alpha": 16,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  }
+}

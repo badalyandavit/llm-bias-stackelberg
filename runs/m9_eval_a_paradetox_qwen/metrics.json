@@ -1,0 +1,82 @@
+{
+  "n": 1200,
+  "mean_before": 0.9808686400731466,
+  "mean_after": 0.23936138339078047,
+  "mean_delta": -0.7415072566823655,
+  "std_before": 0.0716565189645245,
+  "std_after": 0.32739663486525705,
+  "std_delta": 0.3312645604441377,
+  "before_min": 0.019877583592480597,
+  "before_max": 0.9999998339205458,
+  "after_min": 0.012311763087073602,
+  "after_max": 0.9959030729004558,
+  "delta_p10": -0.9856767832535694,
+  "delta_p50": -0.9442525340982957,
+  "delta_p90": -0.13474213043420286,
+  "improved_rate": 0.9891666666666666,
+  "worsened_rate": 0.0025,
+  "unchanged_rate": 0.008333333333333333,
+  "accept_rate": 0.0,
+  "rewrite_rate": 1.0,
+  "abstain_rate": 0.0,
+  "action_counts": {
+    "rewrite": 1200
+  },
+  "category_counts_before": {
+    "toxic": 1190,
+    "obscene": 998,
+    "insult": 354,
+    "identity_hate": 20,
+    "severe_toxic": 6,
+    "threat": 1
+  },
+  "category_counts_after": {
+    "toxic": 274,
+    "insult": 8,
+    "obscene": 5
+  },
+  "category_metrics": {
+    "identity_hate": {
+      "n": 20,
+      "mean_before": 0.9948576992109865,
+      "mean_after": 0.4692401093316854,
+      "mean_delta": -0.525617589879301,
+      "improved_rate": 1.0
+    },
+    "insult": {
+      "n": 354,
+      "mean_before": 0.9956173594528536,
+      "mean_after": 0.37575456153635706,
+      "mean_delta": -0.6198627979164966,
+      "improved_rate": 0.9887005649717514
+    },
+    "obscene": {
+      "n": 998,
+      "mean_before": 0.9967121412351444,
+      "mean_after": 0.23346899883330605,
+      "mean_delta": -0.7632431424018385,
+      "improved_rate": 1.0
+    },
+    "severe_toxic": {
+      "n": 6,
+      "mean_before": 0.9999995856403882,
+      "mean_after": 0.46486465728218046,
+      "mean_delta": -0.5351349283582078,
+      "improved_rate": 1.0
+    },
+    "threat": {
+      "n": 1,
+      "mean_before": 0.9992237247311484,
+      "mean_after": 0.9670843176236498,
+      "mean_delta": -0.03213940710749863,
+      "improved_rate": 1.0
+    },
+    "toxic": {
+      "n": 1190,
+      "mean_before": 0.9860312823870108,
+      "mean_after": 0.24065714382764442,
+      "mean_delta": -0.7453741385593657,
+      "improved_rate": 0.9899159663865547
+    }
+  }
+}

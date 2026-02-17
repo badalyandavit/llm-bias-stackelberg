@@ -1,0 +1,38 @@
+{
+  "n": 1200,
+  "mean_before": 0.9808686400731466,
+  "mean_after": 0.17414525543543488,
+  "mean_delta": -0.8067233846377116,
+  "std_before": 0.0716565189645245,
+  "std_after": 0.29790302060682355,
+  "std_delta": 0.3103887265678528,
+  "before_p50": 0.9988007189335538,
+  "after_p50": 0.01625633692294859,
+  "delta_p10": -0.9870312470912381,
+  "delta_p50": -0.9733187168082952,
+  "delta_p90": -0.2039293055960525,
+  "improved_rate": 0.9941666666666666,
+  "worsened_rate": 0.005833333333333334,
+  "unchanged_rate": 0.0,
+  "empty_rate": 0.0,
+  "copy_rate": 0.0,
+  "len_ratio_p10": 3.127659574468085,
+  "len_ratio_p50": 5.11864406779661,
+  "len_ratio_p90": 8.705882352941176,
+  "edit_norm_p10": 0.7343173431734318,
+  "edit_norm_p50": 0.8407407407407408,
+  "edit_norm_p90": 0.9038461538461539,
+  "category_counts_before": {
+    "toxic": 1190,
+    "obscene": 998,
+    "insult": 354,
+    "identity_hate": 20,
+    "severe_toxic": 6,
+    "threat": 1
+  },
+  "category_counts_after": {
+    "toxic": 176,
+    "obscene": 41,
+    "insult": 24
+  }
+}
